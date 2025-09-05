@@ -60,9 +60,7 @@
                         </div>
                     </div>
                     
-                    <!-- Note Content (with rich text rendering) -->
                     <div class="prose prose-slate max-w-none text-slate-800 text-base leading-relaxed">
-                        {{-- IMPORTANT: Use {!! !!} to render HTML from Trix editor --}}
                         {!! $note->content !!}
                     </div>
                 </div>
