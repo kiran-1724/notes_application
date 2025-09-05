@@ -60,19 +60,24 @@ class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $this->authorize('create', Note::class);
+   public function store(Request $request): RedirectResponse
+{
+    $this->authorize('create', Note::class);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:100',
-            'content' => 'required|string',
-        ]);
+    $validated = $request->validate([
+        'title' => [
+            'required',
+            'string',
+            'max:100',
+            'unique:notes,title,NULL,id,user_id,' . Auth::id()
+        ],
+        'content' => 'required|string',
+    ]);
 
-        $request->user()->notes()->create($validated);
+    $request->user()->notes()->create($validated);
 
-        return Redirect::route('notes.index')->with('success', 'Note created successfully!');
-    }
+    return Redirect::route('notes.index')->with('success', 'Note created successfully!');
+}
     
     /**
      * Display the specified resource.
@@ -95,19 +100,24 @@ class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Note $note): RedirectResponse
-    {
-        $this->authorize('update', $note);
+ public function update(Request $request, Note $note): RedirectResponse
+{
+    $this->authorize('update', $note);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:100',
-            'content' => 'required|string',
-        ]);
+    $validated = $request->validate([
+        'title' => [
+            'required',
+            'string',
+            'max:100',
+            'unique:notes,title,' . $note->id . ',id,user_id,' . Auth::id()
+        ],
+        'content' => 'required|string',
+    ]);
 
-        $note->update($validated);
+    $note->update($validated);
 
-        return Redirect::route('notes.index')->with('success', 'Note updated successfully!');
-    }
+    return Redirect::route('notes.index')->with('success', 'Note updated successfully!');
+}
 
     /**
      * Remove the specified resource from storage.
