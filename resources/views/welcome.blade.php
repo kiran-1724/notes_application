@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Notes Application</title>
+    <title>{{ config('app.name', 'Notes Application') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -57,25 +57,55 @@
                     <span class="text-xl font-semibold tracking-tight">Notes</span>
                 </div>
 
-                <!-- Navigation -->
-                <nav class="hidden md:flex items-center space-x-1">
-                    <a href="/login" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                        Sign in
-                    </a>
-                    <a href="/register" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
-                        Sign up
-                    </a>
-                </nav>
+                <!-- Navigation based on authentication -->
+                @auth
+                    <!-- Logged in navigation -->
+                    <nav class="hidden md:flex items-center space-x-1">
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v1H8V5z"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="{{ route('notes.index') }}" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            My Notes
+                        </a>
+                    </nav>
 
-                <!-- Mobile Navigation -->
-                <div class="flex md:hidden items-center space-x-2">
-                    <a href="/login" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                        Sign in
-                    </a>
-                    <a href="/register" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
-                        Sign up
-                    </a>
-                </div>
+                    <!-- Mobile Navigation for logged in users -->
+                    <div class="flex md:hidden items-center space-x-2">
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('notes.index') }}" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
+                            Notes
+                        </a>
+                    </div>
+                @else
+                    <!-- Guest navigation -->
+                    <nav class="hidden md:flex items-center space-x-1">
+                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                            Sign in
+                        </a>
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
+                            Sign up
+                        </a>
+                    </nav>
+
+                    <!-- Mobile Navigation for guests -->
+                    <div class="flex md:hidden items-center space-x-2">
+                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                            Sign in
+                        </a>
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
+                            Sign up
+                        </a>
+                    </div>
+                @endauth
             </div>
         </div>
     </header>
@@ -87,25 +117,51 @@
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mx-auto max-w-4xl text-center">
                     <div class="space-y-6">
-                        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                            <span class="block">Notes Application</span>
-                        </h1>
-                        <p class="mx-auto max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-                            A simple and efficient way to capture your thoughts, organize your ideas, and keep track of what matters most.
-                        </p>
+                        @auth
+                            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                                <span class="block">Welcome back, {{ Auth::user()->name }}!</span>
+                            </h1>
+                            <p class="mx-auto max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
+                                Ready to capture your thoughts and ideas? Access your notes or create something new.
+                            </p>
+                        @else
+                            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                                <span class="block">Notes Application</span>
+                            </h1>
+                            <p class="mx-auto max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
+                                A simple and efficient way to capture your thoughts, organize your ideas, and keep track of what matters most.
+                            </p>
+                        @endauth
                     </div>
 
-                    <!-- CTA Buttons -->
-                    <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                        <a href="/register" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-                            Get started
-                        </a>
-                        <a href="/login" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-input bg-background px-8 py-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                            Sign in
-                        </a>
-                    </div>
+                    <!-- CTA Buttons based on authentication -->
+                    @auth
+                        <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                            <a href="{{ route('dashboard') }}" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                </svg>
+                                Go to Dashboard
+                            </a>
+                            <a href="{{ route('notes.create') }}" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-input bg-background px-8 py-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Create New Note
+                            </a>
+                        </div>
+                    @else
+                        <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                            <a href="{{ route('register') }}" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                                Get started
+                            </a>
+                            <a href="{{ route('login') }}" class="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-input bg-background px-8 py-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                                Sign in
+                            </a>
+                        </div>
+                    @endauth
 
-                    <!-- Compact Features -->
+                    <!-- Features (same for all users) -->
                     <div class="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-4">
                         <div class="flex flex-col items-center space-y-3 text-center">
                             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
